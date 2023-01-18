@@ -31,7 +31,28 @@ func New(pageservice services.PageService) PageController {
 		PageService: pageservice,
 	}
 }
+func (pgc *PageController) CreateNewPage(ctx *gin.Context) {
+	var page models.Page
+	if err := ctx.ShouldBindJSON(&page); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+	temp := strings.Split(page.Key, " ")
+	//checking total number of keys
+	if len(temp) <= 10 {
 
+		err := pgc.PageService.AddPage(&page)
+
+		if err != nil {
+			ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"message": "loaded into database"})
+	} else {
+		ctx.JSON(http.StatusOK, gin.H{"message": "key length out of limit"})
+	}
+
+}
 func (pgc *PageController) GetByQuery(ctx *gin.Context) {
 	temp := []string{}
 	var query string = ctx.Param("query")
@@ -87,6 +108,7 @@ func (c *PageController) Routes(route *gin.RouterGroup) {
 	//route.POST("/addpage", c.CreateNewPage)
 	route.GET("/pages", c.GetAllPage)
 	route.GET("/:query", c.GetByQuery)
+	route.POST("/newpage", c.CreateNewPage)
 	route.GET("/", c.online)
 
 }
