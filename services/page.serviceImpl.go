@@ -20,6 +20,10 @@ func NewPageService(pagescollection *mongo.Collection, ctx context.Context) Page
 		ctx:             ctx,
 	}
 }
+func (u *PageServiceImpl) AddPage(page *models.Page) error {
+	_, err := u.pagescollection.InsertOne(u.ctx, page)
+	return err
+}
 
 func (psi *PageServiceImpl) GetAllPages() ([]*models.Page, error) {
 	var pages []*models.Page
