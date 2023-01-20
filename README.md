@@ -3,7 +3,7 @@
 
 ## **Step:1 Clone the Repository-**
 
-git clone https://github.com/jaiswalmonika20/Search_engine_task
+git clone   https://github.com/jaiswalmonika20/Search_engine_task  "Search_engine_task"
 
 
 ## **Step:2 Running Dokcer-**
@@ -21,9 +21,11 @@ docker-compose up
  
  
     i. To check api is working properly : **GET** REQUEST 
+    
          http://localhost:8080/v1/
          
     ii. To store webpage in MongoDB : **POST** REQUEST 
+    
         http://localhost:8080/v1/newpage
         
         Add this json to request body
@@ -34,6 +36,7 @@ docker-compose up
         }
         
     iii. To get Query in MongoDB : **GET** REQUEST 
+    
         http://localhost:8080/v1/:query/
         
         Add this json to request body
@@ -43,6 +46,7 @@ docker-compose up
         }
         
     iv. To get all web pages in MongoDB : **GET** REQUEST  
+    
         http://localhost:8080/v1/pages
         
        
