@@ -37,13 +37,8 @@
         
     iii. To get Query in MongoDB : **GET** REQUEST 
     
-        http://localhost:8080/v1/:query/
+        http://localhost:8080/v1/ford car
         
-      Add this json to request body
-        
-        {
-         "key":"ford card"
-        }
         
     iv. To get all web pages in MongoDB : **GET** REQUEST  
     
