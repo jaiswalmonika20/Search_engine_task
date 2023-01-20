@@ -28,7 +28,7 @@
     
         http://localhost:8080/v1/newpage
         
-      Add this json to request body
+      Add this  to request body
         
         {
          "id":1,
