@@ -11,6 +11,7 @@ git clone https://github.com/jaiswalmonika20/Search_engine_task
   
 cd "Search_engine_task"
 docker-compose build
+
 docker-compose up
 
 
@@ -47,7 +48,7 @@ docker-compose up
         
        
        
-## **Step:4 **To stop running containers-**
+## Step:4 **To stop running containers-**
 
       docker-compose down
         
