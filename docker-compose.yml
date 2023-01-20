@@ -1,0 +1,21 @@
+version: '3.9'
+services:
+  mongo-container:
+    image: mongo
+    expose:
+      - 27017
+    volumes:
+      - data-vol:/data/db
+      - config-vol:/data/configdb
+
+  
+  app-container:
+    build: .
+    ports:
+      - 8080:8080
+    depends_on:
+      - mongo-container
+
+volumes:
+    data-vol: 
+    config-vol:
