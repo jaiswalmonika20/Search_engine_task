@@ -10,7 +10,6 @@ git clone https://github.com/jaiswalmonika20/Search_engine_task
    (Check docker running properly)
   
 cd "Search_engine_task"
-docker-compose build
 
 docker-compose up
 
