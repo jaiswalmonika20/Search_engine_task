@@ -3,15 +3,15 @@
 
 ## **Step:1 Clone the Repository-**
 
-git clone   https://github.com/jaiswalmonika20/Search_engine_task  "Search_engine_task"
+    git clone https://github.com/jaiswalmonika20/Search_engine_task  
 
 
 ## **Step:2 Running Dokcer-**
    (Check docker running properly)
   
-cd "Search_engine_task"
+    cd "Search_engine_task"
 
-docker-compose up
+    docker-compose up
 
 
 ## **Step:3 Testing API-**
@@ -28,7 +28,7 @@ docker-compose up
     
         http://localhost:8080/v1/newpage
         
-        Add this json to request body
+      Add this json to request body
         
         {
          "id":1,
@@ -39,7 +39,7 @@ docker-compose up
     
         http://localhost:8080/v1/:query/
         
-        Add this json to request body
+      Add this json to request body
         
         {
          "key":"ford card"
