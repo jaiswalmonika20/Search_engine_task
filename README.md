@@ -48,7 +48,7 @@
        
 ## Step:4 **To stop running containers-**
 
-      docker-compose down
+      docker-compose down 
         
         
     
