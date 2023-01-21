@@ -14,3 +14,4 @@ RUN go build -o se.exe ./cmd/
 EXPOSE 8080
 
 CMD [ "./se.exe" ]
+
