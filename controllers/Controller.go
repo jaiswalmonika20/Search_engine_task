@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"sort"
 	"strconv"
@@ -15,25 +16,17 @@ type PageController struct {
 	PageService services.PageService
 }
 
-func SortByPriority_Pages(mpp map[string]int) []string {
-	keys := make([]string, 0, len(mpp))
-
-	for key := range mpp {
-		keys = append(keys, key)
-	}
-	sort.SliceStable(keys, func(i, j int) bool {
-		return mpp[keys[i]] > mpp[keys[j]]
-	})
-	return keys
-}
-
 func New(pageservice services.PageService) PageController {
 	return PageController{
 		PageService: pageservice,
 	}
 }
 
-// adding new data in dbms
+// check api is live
+func online(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{"message": "api is online"})
+}
+
 func (pagecontroller *PageController) CreateNewPage(ctx *gin.Context) {
 	var page models.Page
 	if err := ctx.ShouldBindJSON(&page); err != nil {
@@ -56,18 +49,50 @@ func (pagecontroller *PageController) CreateNewPage(ctx *gin.Context) {
 	}
 
 }
+
+// get all data store in dbms
+func (pagecontroller *PageController) GetAllPage(ctx *gin.Context) {
+	pages, err := pagecontroller.PageService.GetAllPages()
+	if err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, pages)
+}
+
+func SortByPriority_Pages(mpp map[string]int) []string {
+	keys := make([]string, 0, len(mpp))
+
+	for key := range mpp {
+		keys = append(keys, key)
+	}
+	sort.SliceStable(keys, func(i, j int) bool {
+		return mpp[keys[i]] > mpp[keys[j]]
+	})
+	return keys
+}
+
+// adding new data in dbms
+
 func (pagecontroller *PageController) GetByQuery(ctx *gin.Context) {
-	temp := []string{}
+
 	var query string = ctx.Param("query")
 	queries := strings.Split(query, " ")
 
-	user, err := pagecontroller.PageService.GetAllPages()
+	page, err := pagecontroller.PageService.GetAllPages()
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
 		return
 	}
 
-	for _, t := range user {
+	mpp := Calculate_rating(page, queries)
+
+	ctx.JSON(http.StatusOK, SortByPriority_Pages(mpp))
+
+}
+func Calculate_rating(pages []*models.Page, queries []string) map[string]int {
+	temp := []string{}
+	for _, t := range pages {
 		temp = append(temp, t.Key)
 	}
 	val := []int{}
@@ -91,24 +116,8 @@ func (pagecontroller *PageController) GetByQuery(ctx *gin.Context) {
 			mpp[pageNo] = varr
 		}
 	}
-
-	ctx.JSON(http.StatusOK, SortByPriority_Pages(mpp))
-
-}
-
-// check api is live
-func online(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{"message": "api is online"})
-}
-
-// get all data store in dbms
-func (pagecontroller *PageController) GetAllPage(ctx *gin.Context) {
-	pages, err := pagecontroller.PageService.GetAllPages()
-	if err != nil {
-		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
-		return
-	}
-	ctx.JSON(http.StatusOK, pages)
+	fmt.Println(mpp)
+	return mpp
 }
 
 func (pagecontroller *PageController) Routes(route *gin.RouterGroup) {
