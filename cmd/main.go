@@ -14,22 +14,39 @@ import (
 )
 
 var (
-	server      *gin.Engine
-	ps          services.PageService
-	pc          controllers.PageController
-	ctx         context.Context
-	pagec       *mongo.Collection
-	mongoclient *mongo.Client
-	err         error
-	ulrs        string = ":8080"
-	mongo_uri   string = "mongodb://mongo-container:27017"
+	server          *gin.Engine
+	pageservice     services.PageService
+	pagecontroller  controllers.PageController
+	ctx             context.Context
+	pagescollection *mongo.Collection
+	mongoclient     *mongo.Client
+	err             error
+	ulrs            string = ":8080"
+	mongo_uri       string = "mongodb://localhost:27017"
 )
 
 func init() {
 	ctx = context.TODO()
-
 	mongoconn := options.Client().ApplyURI(mongo_uri)
-	mongoclient, err = mongo.Connect(ctx, mongoconn)
+	pagec := DatabaseConnectionSetup(mongoconn)
+	pageservice = services.NewPageService(pagec, ctx)
+	pagecontroller = controllers.New(pageservice)
+	server = gin.Default()
+}
+
+func main() {
+	defer mongoclient.Disconnect(ctx)
+
+	//versioning api
+	basepath := server.Group("/v1")
+	pagecontroller.Routes(basepath)
+
+	log.Fatal(server.Run(ulrs))
+
+}
+
+func DatabaseConnectionSetup(mongoconnection *options.ClientOptions) *mongo.Collection {
+	mongoclient, err = mongo.Connect(ctx, mongoconnection)
 	if err != nil {
 		log.Fatal("error while connecting with mongo", err)
 	}
@@ -40,19 +57,6 @@ func init() {
 
 	fmt.Println("mongo connection established")
 
-	pagec = mongoclient.Database("taskdb").Collection("pages")
-	ps = services.NewPageService(pagec, ctx)
-	pc = controllers.New(ps)
-	server = gin.Default()
-}
-
-func main() {
-	defer mongoclient.Disconnect(ctx)
-
-	//versioning api
-	basepath := server.Group("/v1")
-	pc.Routes(basepath)
-
-	log.Fatal(server.Run(ulrs))
-
+	pagescollection = mongoclient.Database("new").Collection("page")
+	return pagescollection
 }
