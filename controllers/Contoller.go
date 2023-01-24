@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/module_page/models"
 	"github.com/module_page/services"
 )
 
@@ -31,7 +32,9 @@ func New(pageservice services.PageService) PageController {
 		PageService: pageservice,
 	}
 }
-func (pgc *PageController) CreateNewPage(ctx *gin.Context) {
+
+// adding new data in dbms
+func (pagecontroller *PageController) CreateNewPage(ctx *gin.Context) {
 	var page models.Page
 	if err := ctx.ShouldBindJSON(&page); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
@@ -41,7 +44,7 @@ func (pgc *PageController) CreateNewPage(ctx *gin.Context) {
 	//checking total number of keys
 	if len(temp) <= 10 {
 
-		err := pgc.PageService.AddPage(&page)
+		err := pagecontroller.PageService.AddPage(&page)
 
 		if err != nil {
 			ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
@@ -53,12 +56,12 @@ func (pgc *PageController) CreateNewPage(ctx *gin.Context) {
 	}
 
 }
-func (pgc *PageController) GetByQuery(ctx *gin.Context) {
+func (pagecontroller *PageController) GetByQuery(ctx *gin.Context) {
 	temp := []string{}
 	var query string = ctx.Param("query")
 	queries := strings.Split(query, " ")
 
-	user, err := pgc.PageService.GetAllPages()
+	user, err := pagecontroller.PageService.GetAllPages()
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
 		return
@@ -92,11 +95,15 @@ func (pgc *PageController) GetByQuery(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, SortByPriority_Pages(mpp))
 
 }
-func (pgc *PageController) online(ctx *gin.Context) {
+
+// check api is live
+func (pagecontroller *PageController) online(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "api is online"})
 }
-func (pgc *PageController) GetAllPage(ctx *gin.Context) {
-	pages, err := pgc.PageService.GetAllPages()
+
+// get all data store in dbms
+func (pagecontroller *PageController) GetAllPage(ctx *gin.Context) {
+	pages, err := pagecontroller.PageService.GetAllPages()
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
 		return
@@ -104,11 +111,10 @@ func (pgc *PageController) GetAllPage(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, pages)
 }
 
-func (c *PageController) Routes(route *gin.RouterGroup) {
-	//route.POST("/addpage", c.CreateNewPage)
-	route.GET("/pages", c.GetAllPage)
-	route.GET("/:query", c.GetByQuery)
-	route.POST("/newpage", c.CreateNewPage)
-	route.GET("/", c.online)
+func (pagecontroller *PageController) Routes(route *gin.RouterGroup) {
+	route.GET("/pages", pagecontroller.GetAllPage)
+	route.GET("/:query", pagecontroller.GetByQuery)
+	route.POST("/newpage", pagecontroller.CreateNewPage)
+	route.GET("/", pagecontroller.online)
 
 }
