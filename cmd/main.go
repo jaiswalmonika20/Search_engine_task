@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/module_page/cmd/config"
 	"github.com/module_page/controllers"
 	"github.com/module_page/services"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -21,27 +22,47 @@ var (
 	pagescollection *mongo.Collection
 	mongoclient     *mongo.Client
 	err             error
-	ulrs            string = ":8080"
-	mongo_uri       string = "mongodb://localhost:27017"
+	//ulrs            string = ":8080"
+	//mongo_uri    string ="mongodb://mongo-container:27017"
 )
 
-func init() {
+func StartServer() {
+
+	mongo_uri := config.Config.Database.Protocol + "://" + config.Config.Database.Host + ":" + fmt.Sprint(config.Config.Database.Port)
+	ulrs := ":" + fmt.Sprint(config.Config.Server.Port)
+
+	server = gin.Default()
 	ctx = context.TODO()
 	mongoconn := options.Client().ApplyURI(mongo_uri)
 	pagec := DatabaseConnectionSetup(mongoconn)
 	pageservice = services.NewPageService(pagec, ctx)
 	pagecontroller = controllers.New(pageservice)
-	server = gin.Default()
-}
 
-func main() {
 	defer mongoclient.Disconnect(ctx)
 
 	//versioning api
-	basepath := server.Group("/v1")
+	//basepath := server.Group("/v1")
+
+	basepath := server.Group("/" + config.Config.Server.Version)
 	pagecontroller.Routes(basepath)
 
 	log.Fatal(server.Run(ulrs))
+
+}
+
+func main() {
+
+	// defer mongoclient.Disconnect(ctx)
+
+	// //versioning api
+	// //basepath := server.Group("/v1")
+	// basepath := server.Group("/" + config.Config.Server.Version)
+	// pagecontroller.Routes(basepath)
+
+	// log.Fatal(server.Run(ulrs))
+
+	config.LoadConfig()
+	StartServer()
 
 }
 
@@ -57,6 +78,7 @@ func DatabaseConnectionSetup(mongoconnection *options.ClientOptions) *mongo.Coll
 
 	fmt.Println("mongo connection established")
 
-	pagescollection = mongoclient.Database("new").Collection("page")
+	//pagescollection = mongoclient.Database("new").Collection("page")
+	pagescollection = mongoclient.Database(config.Config.Database.DBName).Collection(config.Config.Database.Collection)
 	return pagescollection
 }
