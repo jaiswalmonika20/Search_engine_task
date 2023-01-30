@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	mocks "github.com/module_page/mocks/services"
+	mocks "github.com/module_page/mocks/pkg/services"
 	"github.com/module_page/pkg/models"
 	"github.com/module_page/pkg/services"
 )
@@ -21,7 +21,7 @@ func TestPageController_online(t *testing.T) {
 
 	response := httptest.NewRecorder()
 	context, _ := gin.CreateTestContext(response)
-	online(context)
+	Online(context)
 	if response.Code != http.StatusOK {
 		t.Errorf("api not active")
 	}

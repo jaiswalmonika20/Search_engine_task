@@ -22,7 +22,7 @@ func New(pageservice services.PageService) PageController {
 }
 
 // check api is live
-func online(ctx *gin.Context) {
+func Online(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "api is online"})
 }
 
@@ -111,11 +111,10 @@ func Calculate_rating(pages []*models.Page, queries []string) map[string]int {
 	//fmt.Println(mpp)
 	return mpp
 }
-
 func (pagecontroller *PageController) Routes(route *gin.RouterGroup) {
 	route.GET("/pages", pagecontroller.GetAllPage)
 	route.GET("/:query", pagecontroller.GetByQuery)
 	route.POST("/newpage", pagecontroller.CreateNewPage)
-	route.GET("/", online)
+	route.GET("/", Online)
 
 }
