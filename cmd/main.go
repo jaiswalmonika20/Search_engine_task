@@ -22,7 +22,7 @@ var (
 	mongoclient     *mongo.Client
 	err             error
 	ulrs            string = ":8080"
-	mongo_uri       string = "mongodb://localhost:27017"
+	mongo_uri       string = "mongodb://mongo-container:27017"
 )
 
 func init() {

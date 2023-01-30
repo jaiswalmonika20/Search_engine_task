@@ -111,3 +111,11 @@ func Calculate_rating(pages []*models.Page, queries []string) map[string]int {
 	//fmt.Println(mpp)
 	return mpp
 }
+
+func (pagecontroller *PageController) Routes(route *gin.RouterGroup) {
+	route.GET("/pages", pagecontroller.GetAllPage)
+	route.GET("/:query", pagecontroller.GetByQuery)
+	route.POST("/newpage", pagecontroller.CreateNewPage)
+	route.GET("/", online)
+
+}

@@ -4,34 +4,35 @@ import (
 	"context"
 	"errors"
 
-	"github.com/module_page/models"
+	"github.com/module_page/pkg/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type PageServiceImpl struct {
 	pagescollection *mongo.Collection
-	ctx             context.Context
+	context         context.Context
 }
 
-func NewPageService(pagescollection *mongo.Collection, ctx context.Context) PageService {
+func NewPageService(pagescollection *mongo.Collection, context context.Context) PageService {
 	return &PageServiceImpl{
 		pagescollection: pagescollection,
-		ctx:             ctx,
+		context:         context,
 	}
 }
+
 func (u *PageServiceImpl) AddPage(page *models.Page) error {
-	_, err := u.pagescollection.InsertOne(u.ctx, page)
+	_, err := u.pagescollection.InsertOne(u.context, page)
 	return err
 }
 
 func (psi *PageServiceImpl) GetAllPages() ([]*models.Page, error) {
 	var pages []*models.Page
-	cursor, err := psi.pagescollection.Find(psi.ctx, bson.D{{}})
+	cursor, err := psi.pagescollection.Find(psi.context, bson.D{{}})
 	if err != nil {
 		return nil, err
 	}
-	for cursor.Next(psi.ctx) {
+	for cursor.Next(psi.context) {
 		var page models.Page
 		err := cursor.Decode(&page)
 		if err != nil {
@@ -44,7 +45,7 @@ func (psi *PageServiceImpl) GetAllPages() ([]*models.Page, error) {
 		return nil, err
 	}
 
-	cursor.Close(psi.ctx)
+	cursor.Close(psi.context)
 
 	if len(pages) == 0 {
 		return nil, errors.New("pages not found")
