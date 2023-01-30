@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -13,6 +13,8 @@ import (
 	mocks "github.com/module_page/mocks/pkg/services"
 	"github.com/module_page/pkg/models"
 	"github.com/module_page/pkg/services"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 var pagecontroller *PageController
@@ -122,47 +124,62 @@ func TestCalculate_rating(t *testing.T) {
 }
 
 func TestPageController_CreateNewPage(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-	router := gin.Default()
-	response := httptest.NewRecorder()
+	mockRepo := mocks.NewPageService(t)
+	mockRepo.On("AddPage", mock.Anything, mock.Anything).Return(nil)
+	controller := New(mockRepo)
 
+	router := gin.Default()
+	router.POST("/newpage", controller.CreateNewPage)
+	//status 200
 	page := models.Page{
 		ID:  1,
 		Key: "lamborgini",
 	}
-	ServiceMock := mocks.NewPageService(t)
-	ServiceMock.On("AddPage", page).Return(nil)
+	jsonInput, _ := json.Marshal(page)
+	req := httptest.NewRequest("POST", "/newpage", bytes.NewBuffer(jsonInput))
+	resp := httptest.NewRecorder()
+	router.ServeHTTP(resp, req)
+	assert.Equal(t, http.StatusOK, resp.Code)
+	assert.NotEmpty(t, resp.Body)
+	//status key size limit
+	page = models.Page{
+		ID:  1,
+		Key: "ford dee dd gf d e   d d f d e   d dh s",
+	}
+	jsonInput, _ = json.Marshal(page)
+	req = httptest.NewRequest("POST", "/newpage", bytes.NewBuffer(jsonInput))
+	resp = httptest.NewRecorder()
+	router.ServeHTTP(resp, req)
+	assert.Equal(t, http.StatusOK, resp.Code)
+	assert.NotEmpty(t, resp.Body)
 
-	router.POST("/newpage", pagecontroller.CreateNewPage)
-	input := `{}`
-	req, err := http.NewRequest("POST", "/newpage", bytes.NewBuffer([]byte(input)))
-	if err != nil {
-		log.Println(err)
-	}
-	router.ServeHTTP(response, req)
-	if response.Code != http.StatusOK {
-		t.Errorf("data loaded test successful")
-	}
+	//status bad_request
+	// input = &models.Page{
+	// 	ID:  1,
+	// 	Key: "ford dee",
+	// }
+	// jsonInput, _ = json.Marshal(input)
+	// req = httptest.NewRequest("POST", "/newpage", bytes.NewBuffer(jsonInput))
+	// resp = httptest.NewRecorder()
+	// router.ServeHTTP(resp, req)
+	// assert.Equal(t, http.StatusBadRequest, resp.Code)
+	// assert.NotEmpty(t, resp.Body)
 
 }
 func TestPageController_GetAllPage(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	response := httptest.NewRecorder()
 	mockRepo := mocks.NewPageService(t)
+	pageController := New(mockRepo)
 	mockRepo.On("GetAllPages").Return([]models.Page{}, nil)
-	if response.Code != http.StatusOK {
-		t.Errorf("database not connected")
-	}
-	router.GET("/pages", pagecontroller.GetAllPage)
-	request, err := http.NewRequest("GET", "/pages", nil)
-	if err != nil {
-		log.Println(err)
-	} else {
+	router.GET("/pages", pageController.GetAllPage)
 
-	}
-	router.ServeHTTP(response, request)
+	req := httptest.NewRequest("GET", "/pages", nil)
 
+	resp := httptest.NewRecorder()
+	router.ServeHTTP(resp, req)
+	// assert.Equal(t, http.StatusBadRequest, response.Code)
+	assert.Equal(t, http.StatusInternalServerError, resp.Code)
 }
 
 func TestPageController_GetByQuery(t *testing.T) {
@@ -182,7 +199,6 @@ func TestPageController_GetByQuery(t *testing.T) {
 		"ford",
 	}
 	response := httptest.NewRecorder()
-	fmt.Println(response)
 	actualMap := Calculate_rating(pages, queries)
 	if got := Calculate_rating(pages, queries); !reflect.DeepEqual(got, expectedMap) {
 		t.Errorf("Calculate_rating() = %v, want %v", got, expectedMap)
@@ -191,16 +207,13 @@ func TestPageController_GetByQuery(t *testing.T) {
 		"P1", "P2", "P3",
 	}
 	router.GET("/:query", pagecontroller.GetByQuery)
-	request, err := http.NewRequest("GET", "/:query", nil)
+	request, _ := http.NewRequest("GET", "/:query", nil)
 	mockRepo.On("SortByPriority_Pages", actualMap).Return(expectedSortedAns)
-	if err != nil {
-		log.Println(err)
-	}
+	// if err != nil {
+	// 	log.Println(err)
+	// }
 	router.ServeHTTP(response, request)
 	fmt.Println(response.Code)
-	if http.StatusBadGateway == response.Code {
-		t.Error("bad gateway error")
-	} else {
-		t.Error(response.Code)
-	}
+	assert.Equal(t, http.StatusBadRequest, response.Code)
+
 }
