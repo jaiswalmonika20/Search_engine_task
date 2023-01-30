@@ -6,8 +6,8 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/module_page/controllers"
-	"github.com/module_page/services"
+	"github.com/module_page/pkg/controllers"
+	"github.com/module_page/pkg/services"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -22,7 +22,7 @@ var (
 	mongoclient     *mongo.Client
 	err             error
 	ulrs            string = ":8080"
-	mongo_uri       string = "mongodb://localhost:27017"
+	mongo_uri       string = "mongodb://mongo-container:27017"
 )
 
 func init() {
