@@ -15,6 +15,15 @@ up:
 
 	@echo Docker images started!
 
+
+## Runs all the Unit Tests
+
+test:
+	@echo Running Tests
+	go test -v -coverprofile cover.out ./...	
+
+	go tool cover -html cover.out -o cover.html
+
 ## down: stop docker compose
 
 down:
