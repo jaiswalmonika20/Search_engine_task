@@ -29,7 +29,7 @@ func Online(ctx *gin.Context) {
 func (pagecontroller *PageController) CreateNewPage(ctx *gin.Context) {
 	var page models.Page
 	if err := ctx.ShouldBindJSON(&page); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		//ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 	temp := strings.Split(page.Key, " ")
