@@ -1,0 +1,11 @@
+server:
+  host: .
+  port: 8080
+  version: "v1"
+
+database:
+  host: mongo-container
+  port: 27017
+  protocol: mongodb
+  dbname: new
+  collection: page

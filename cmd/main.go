@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/module_page/cmd/config"
 	"github.com/module_page/pkg/controllers"
 
 	"github.com/module_page/pkg/services"
@@ -22,12 +23,16 @@ var (
 	pagescollection *mongo.Collection
 	mongoclient     *mongo.Client
 	err             error
-	ulrs            string = ":8080"
-	mongo_uri       string = "mongodb://mongo-container:27017"
+
+	//ulrs            string = ":8070"
+	//mongo_uri string = "mongodb://localhost:27017"
+
 )
 
 func init() {
 	ctx = context.TODO()
+	config.LoadConfig()
+	mongo_uri := config.Config.Database.Protocol + "://" + config.Config.Database.Host + ":" + fmt.Sprint(config.Config.Database.Port)
 	mongoconn := options.Client().ApplyURI(mongo_uri)
 	pagec := DatabaseConnectionSetup(mongoconn)
 	pageservice = services.NewPageService(pagec, ctx)
@@ -39,10 +44,9 @@ func main() {
 	defer mongoclient.Disconnect(ctx)
 
 	//versioning api
-	basepath := server.Group("/v1")
+	basepath := server.Group(config.Config.Server.Version)
 	pagecontroller.Routes(basepath)
-
-	log.Fatal(server.Run(ulrs))
+	log.Fatal(server.Run(":" + fmt.Sprint(config.Config.Server.Port)))
 
 }
 
@@ -56,8 +60,8 @@ func DatabaseConnectionSetup(mongoconnection *options.ClientOptions) *mongo.Coll
 		log.Fatal("error while trying to ping mongo", err)
 	}
 
-	fmt.Println("mongo connection established")
+	//fmt.Println("mongo connection established")
 
-	pagescollection = mongoclient.Database("new").Collection("page")
+	pagescollection = mongoclient.Database(config.Config.Database.DBName).Collection(config.Config.Database.Collection)
 	return pagescollection
 }
