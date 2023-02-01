@@ -14,7 +14,7 @@ github.com/module_page/pkg/controllers/Controller.go:66.2,66.45 1 1
 github.com/module_page/pkg/controllers/Controller.go:69.2,69.13 1 1
 github.com/module_page/pkg/controllers/Controller.go:63.23,65.3 1 1
 github.com/module_page/pkg/controllers/Controller.go:66.45,68.3 1 1
-github.com/module_page/pkg/controllers/Controller.go:74.68,84.2 6 0
+github.com/module_page/pkg/controllers/Controller.go:74.68,84.2 6 1
 github.com/module_page/pkg/controllers/Controller.go:85.78,87.26 2 1
 github.com/module_page/pkg/controllers/Controller.go:90.2,91.22 2 1
 github.com/module_page/pkg/controllers/Controller.go:103.2,104.27 2 1

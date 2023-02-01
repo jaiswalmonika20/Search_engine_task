@@ -181,38 +181,39 @@ func TestPageController_GetAllPage(t *testing.T) {
 	assert.Equal(t, http.StatusInternalServerError, resp.Code)
 }
 
-// func TestPageController_GetByQuery(t *testing.T) {
-// 	gin.SetMode(gin.TestMode)
-// 	router := gin.Default()
-// 	mockRepo := mocks.NewPageService(t)
-// 	mockRepo.On("GetAllPages").Return([]models.Page{}, nil)
-// 	expectedMap := map[string]int{
-// 		"P1": 100, "P2": 100, "P3": 90,
-// 	}
-// 	pages := []*models.Page{
-// 		{ID: 1, Key: "ford car"},
-// 		{ID: 2, Key: "ford review"},
-// 		{ID: 3, Key: "car ford review"},
-// 	}
-// 	queries := []string{
-// 		"ford",
-// 	}
-// 	response := httptest.NewRecorder()
-// 	actualMap := Calculate_rating(pages, queries)
-// 	if got := Calculate_rating(pages, queries); !reflect.DeepEqual(got, expectedMap) {
-// 		t.Errorf("Calculate_rating() = %v, want %v", got, expectedMap)
-// 	}
-// 	expectedSortedAns := []string{
-// 		"P1", "P2", "P3",
-// 	}
-// 	router.GET("/:query", pagecontroller.GetByQuery)
-// 	request, _ := http.NewRequest("GET", "/:query", nil)
-// 	mockRepo.On("SortByPriority_Pages", actualMap).Return(expectedSortedAns)
-// 	// if err != nil {
-// 	// 	log.Println(err)
-// 	// }
-// 	router.ServeHTTP(response, request)
-// 	fmt.Println(response.Code)
-// 	assert.Equal(t, http.StatusInternalServerError, response.Code)
+func TestPageController_GetByQuery(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	router := gin.Default()
+	mockRepo := mocks.NewPageService(t)
+	pageController := New(mockRepo)
+	mockRepo.On("GetAllPages").Return([]*models.Page{}, nil)
+	expectedMap := map[string]int{
+		"P1": 100, "P2": 100, "P3": 90,
+	}
+	pages := []*models.Page{
+		{ID: 1, Key: "ford car"},
+		{ID: 2, Key: "ford review"},
+		{ID: 3, Key: "car ford review"},
+	}
+	queries := []string{
+		"ford",
+	}
+	actualMap := Calculate_rating(pages, queries)
+	if got := Calculate_rating(pages, queries); !reflect.DeepEqual(got, expectedMap) {
+		t.Errorf("Calculate_rating() = %v, want %v", got, expectedMap)
+	}
+	expectedSortedAns := []string{
+		"P1", "P2", "P3",
+	}
+	if got := SortByPriority_Pages(actualMap); !reflect.DeepEqual(got, expectedSortedAns) {
+		t.Errorf("Calculate_rating() = %v, want %v", got, expectedSortedAns)
+	}
+	router.GET("/:query", pageController.GetByQuery)
 
-// }
+	req := httptest.NewRequest("GET", "/:query", nil)
+
+	resp := httptest.NewRecorder()
+	router.ServeHTTP(resp, req)
+	assert.Equal(t, http.StatusOK, resp.Code)
+
+}
