@@ -16,8 +16,6 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-var pagecontroller *PageController
-
 func TestPageController_online(t *testing.T) {
 
 	response := httptest.NewRecorder()
