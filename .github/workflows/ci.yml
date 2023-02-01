@@ -1,0 +1,43 @@
+name: CI
+
+on: 
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  
+
+jobs: 
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.19   
+    - name: Build
+      env:   
+        GOPRIVATE: <private imports if any>   
+      run: CGO_ENABLED=0 GOOS=linux go build -o search_engine_task ./cmd
+    - name: Run tests
+      run: |
+        go test -v -coverprofile=coverage.out ./...
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: coverage.out
+  golangci-lint:  
+    name: runner / golangci-lint
+    runs-on: ubuntu-latest
+    steps:    
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v3
+    - name: golangci-lint
+      uses: reviewdog/action-golangci-lint@v2
