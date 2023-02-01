@@ -7,8 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/module_page/cmd/config"
-	"github.com/module_page/controllers"
-	"github.com/module_page/services"
+	"github.com/module_page/pkg/controllers"
+	"github.com/module_page/pkg/services"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
