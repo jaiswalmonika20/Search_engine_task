@@ -170,7 +170,7 @@ func TestPageController_GetAllPage(t *testing.T) {
 	router := gin.Default()
 	mockRepo := mocks.NewPageService(t)
 	pageController := New(mockRepo)
-	mockRepo.On("GetAllPages").Return([]models.Page{}, nil)
+	mockRepo.On("GetAllPages").Return([]*models.Page{}, nil)
 	router.GET("/pages", pageController.GetAllPage)
 
 	req := httptest.NewRequest("GET", "/pages", nil)
@@ -178,7 +178,7 @@ func TestPageController_GetAllPage(t *testing.T) {
 	resp := httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 	// assert.Equal(t, http.StatusBadRequest, response.Code)
-	assert.Equal(t, http.StatusInternalServerError, resp.Code)
+	assert.Equal(t, http.StatusOK, resp.Code)
 }
 
 func TestPageController_GetByQuery(t *testing.T) {
