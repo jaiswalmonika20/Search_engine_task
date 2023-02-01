@@ -26,7 +26,7 @@ var Config Configure
 
 func LoadConfig() Configure {
 
-	data, err := os.ReadFile("C:/Users/dell/Downloads/webPageSearch/cmd/config/config.yml")
+	data, err := os.ReadFile("./cmd/config/config.yml")
 	if err != nil {
 		log.Fatalf("Error reading config file: %s", err)
 	}
