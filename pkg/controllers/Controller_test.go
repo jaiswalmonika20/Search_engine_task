@@ -177,7 +177,6 @@ func TestPageController_GetAllPage(t *testing.T) {
 
 	resp := httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
-	// assert.Equal(t, http.StatusBadRequest, response.Code)
 	assert.Equal(t, http.StatusOK, resp.Code)
 }
 
