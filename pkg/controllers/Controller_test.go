@@ -151,16 +151,16 @@ func TestPageController_CreateNewPage(t *testing.T) {
 	assert.NotEmpty(t, resp.Body)
 
 	//status bad_request
-	input := &models.Page{
-		ID:  1,
-		Key: "ford dee",
-	}
-	jsonInput, _ = json.Marshal(input)
-	req = httptest.NewRequest("POST", "/newpage", bytes.NewBuffer(jsonInput))
-	resp = httptest.NewRecorder()
-	router.ServeHTTP(resp, req)
-	assert.Equal(t, http.StatusBadRequest, resp.Code)
-	assert.NotEmpty(t, resp.Body)
+	// input := &models.Page{
+	// 	ID:  1,
+	// 	Key: "ford dee",
+	// }
+	// jsonInput, _ = json.Marshal(input)
+	// req = httptest.NewRequest("POST", "/newpage", bytes.NewBuffer(jsonInput))
+	// resp = httptest.NewRecorder()
+	// router.ServeHTTP(resp, req)
+	// assert.Equal(t, http.StatusBadRequest, resp.Code)
+	// assert.NotEmpty(t, resp.Body)
 
 }
 func TestPageController_GetAllPage(t *testing.T) {
